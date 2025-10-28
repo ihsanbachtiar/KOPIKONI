@@ -1,0 +1,138 @@
+    </main> <!-- Menutup tag <main> dari header.ejs -->
+  </div> <!-- Menutup <div class="flex-1 ..."> dari header.ejs -->
+  
+  <!-- 
+    Script JavasScript
+  -->
+
+  <!-- 1. Script AOS (Lokal) -->
+  <script src="/vendor/aos/aos.js"></script>
+  
+  <!-- 2. Script Kustom Aplikasi -->
+  <script>
+    // Inisialisasi AOS (dengan 'scrollContainer' untuk 'main')
+    AOS.init({
+      scrollContainer: '#main-content-area',
+      duration: 800, 
+      once: true,    
+      mirror: false, 
+    });
+
+    // Script untuk dropdown sidebar
+    const menuDropdownToggle = document.getElementById('menuDropdownToggle');
+    const menuDropdownContent = document.getElementById('menuDropdownContent');
+    const menuDropdownArrow = document.getElementById('menuDropdownArrow');
+
+    if (menuDropdownToggle) { // Cek jika ada (aman untuk admin)
+      menuDropdownToggle.addEventListener('click', function() {
+        menuDropdownContent.classList.toggle('hidden');
+        menuDropdownArrow.classList.toggle('rotate-180');
+      });
+    }
+
+    // Script untuk modal checkout
+    const checkoutPopupBtn = document.getElementById('checkout-popup-btn');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const closeModalBg = document.getElementById('checkout-modal-bg'); // Tambahkan ID ini di modal bg
+
+    if (checkoutPopupBtn && checkoutModal && closeModalBtn) {
+      checkoutPopupBtn.addEventListener('click', () => {
+        checkoutModal.classList.remove('hidden');
+      });
+      
+      const closeFn = () => {
+        checkoutModal.classList.add('hidden');
+      };
+      
+      closeModalBtn.addEventListener('click', closeFn);
+      if (closeModalBg) {
+        closeModalBg.addEventListener('click', closeFn);
+      }
+      
+      // Versi lama Anda:
+      // checkoutModal.addEventListener('click', (e) => {
+      //   if (e.target === checkoutModal) {
+      //     checkoutModal.classList.add('hidden');
+      //   }
+      // });
+    }
+
+    // Script untuk notifikasi sukses (di halaman keranjang)
+    const successNotification = document.getElementById('success-notification');
+    const closeNotificationBtn = document.getElementById('close-notification-btn');
+
+    const closeNotif = () => {
+      if (successNotification) {
+        successNotification.style.transition = 'opacity 0.5s ease';
+        successNotification.style.opacity = '0';
+        setTimeout(() => {
+          successNotification.remove();
+        }, 500);
+      }
+    };
+    
+    if (closeNotificationBtn) {
+      closeNotificationBtn.addEventListener('click', closeNotif);
+    }
+    // Otomatis tutup setelah 5 detik
+    setTimeout(closeNotif, 5000);
+
+
+    /* JAVASCRIPT UNTUK HORIZONTAL SCROLL BUTTON
+    */
+    const scrollContainer = document.getElementById('menu-scroll-container');
+    const scrollLeftBtn = document.getElementById('scroll-left-btn');
+    const scrollRightBtn = document.getElementById('scroll-right-btn');
+
+    if (scrollContainer && scrollLeftBtn && scrollRightBtn) {
+      
+      const scrollAmount = 320 + 32; // w-80 (320px) + gap-8 (32px)
+
+      scrollRightBtn.addEventListener('click', () => {
+        scrollContainer.scrollLeft += scrollAmount;
+      });
+
+      scrollLeftBtn.addEventListener('click', () => {
+        scrollContainer.scrollLeft -= scrollAmount;
+      });
+
+      const checkScrollButtons = () => {
+        if (!scrollContainer) return; // Pastikan container ada
+        const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        
+        // Cek tombol kiri
+        if (scrollContainer.scrollLeft <= 0) {
+          scrollLeftBtn.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+          scrollLeftBtn.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        // Cek tombol kanan
+        if (scrollContainer.scrollLeft >= maxScrollLeft - 5) { // Toleransi 5px
+          scrollRightBtn.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+          scrollRightBtn.classList.remove('opacity-0', 'pointer-events-none');
+        }
+      };
+
+      // Cek saat pertama kali dimuat
+      checkScrollButtons(); 
+      // Cek setiap kali user scroll (atau tombol diklik)
+      scrollContainer.addEventListener('scroll', checkScrollButtons);
+
+      // Tampilkan tombol saat hover di container
+      const parentContainer = scrollContainer.parentElement; // div.relative
+      if (parentContainer) {
+        parentContainer.addEventListener('mouseenter', checkScrollButtons);
+        parentContainer.addEventListener('mouseleave', () => {
+          scrollLeftBtn.classList.add('opacity-0', 'pointer-events-none');
+          scrollRightBtn.classList.add('opacity-0', 'pointer-events-none');
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
+

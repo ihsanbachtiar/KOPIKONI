@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard KopiKoni | Modern</title>
+  <link href="/css/output.css" rel="stylesheet">
+  
+  <!-- Link AOS (Sudah ada) -->
+  <link href="/vendor/aos/aos.css" rel="stylesheet">
+
+  <!-- 
+    =======================================================
+    CSS TAMBAHAN UNTUK SEMBUNYIKAN SCROLLBAR
+    =======================================================
+  -->
+  <style>
+    .horizontal-scrollbar-hidden {
+      -ms-overflow-style: none;  /* IE dan Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .horizontal-scrollbar-hidden::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari, dan Opera */
+    }
+  </style>
+  <!-- ======================================================= -->
+
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased flex min-h-screen">
+
+  <!-- Memanggil Sidebar -->
+  <%- include('sidebar') %>
+
+  <!-- Wrapper untuk Konten Kanan (Header + Main) -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Tag <main> dipindah ke sini agar bisa di-scroll -->
+    <main id="main-content-area" class="flex-1 bg-gray-900 overflow-y-auto">
+      
+      <!-- 
+        File ini HANYA membuka tag <main>.
+        Konten (dashboard.ejs, all.ejs) akan masuk ke sini.
+        Tag </main> akan ditutup oleh footer.ejs.
+      -->
+

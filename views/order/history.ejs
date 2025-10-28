@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<section class="p-8 relative" data-aos="fade-in">
+  <h1 class="text-4xl font-extrabold text-amber-300 mb-10">Riwayat Pesanan Saya</h1>
+
+  <div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+    
+    <table class="w-full text-left text-gray-300">
+      <thead class="bg-gray-700 uppercase text-sm text-gray-400">
+        <tr>
+          <th class="py-3 px-6">Order ID</th>
+          <th class="py-3 px-6">Tanggal</th>
+          <th class="py-3 px-6">Total</th>
+          <th class="py-3 px-6">Status</th>
+          <th class="py-3 px-6">Alamat</th>
+          <th class="py-3 px-6">Pembayaran</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders && orders.length > 0) { %>
+          <% orders.forEach(order => { %>
+            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+              <td class="py-4 px-6 font-mono text-amber-400">#<%= order.order_id %></td>
+              <td class="py-4 px-6"><%= new Date(order.order_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) %></td>
+              <td class="py-4 px-6 font-semibold">
+                <%= order.total_amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+              </td>
+              <td class="py-4 px-6">
+                <!-- Logika Status Badge -->
+                <% if (order.status === 'completed') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-green-600 text-white"><%= order.status %></span>
+                <% } else if (order.status === 'processing') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-blue-600 text-white"><%= order.status %></span>
+                <% } else if (order.status === 'cancelled') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-red-600 text-white"><%= order.status %></span>
+                <% } else { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-yellow-600 text-white"><%= order.status %></span>
+                <% } %>
+              </td>
+              <td class="py-4 px-6 text-sm text-gray-400"><%= order.customer_address %></td>
+              <td class="py-4 px-6"><%= order.payment_method %></td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="6" class="py-10 px-6 text-center text-gray-500">Anda belum memiliki riwayat pesanan.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

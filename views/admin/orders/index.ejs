@@ -1,0 +1,74 @@
+<%- include('../../partials/header') %>
+
+<section class="p-8 relative" data-aos="fade-in">
+  <h1 class="text-4xl font-extrabold text-amber-300 mb-10">Manajemen Pesanan (Orders)</h1>
+
+  <div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+    
+    <table class="w-full text-left text-gray-300">
+      <thead class="bg-gray-700 uppercase text-sm text-gray-400">
+        <tr>
+          <th class="py-3 px-6">Order ID</th>
+          <th class="py-3 px-6">Pelanggan</th>
+          <th class="py-3 px-6">Tanggal</th>
+          <th class="py-3 px-6">Total</th>
+          <th class="py-3 px-6">Status Saat Ini</th>
+          <th class="py-3 px-6">Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders && orders.length > 0) { %>
+          <% orders.forEach(order => { %>
+            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+              <td class="py-4 px-6 font-mono text-amber-400">#<%= order.order_id %></td>
+              <td class="py-4 px-6">
+                <div class="font-medium text-white"><%= order.user_name %></div>
+                <div class="text-sm text-gray-400"><%= order.customer_address %></div>
+              </td>
+              <td class="py-4 px-6 text-sm"><%= new Date(order.order_date).toLocaleString('id-ID') %></td>
+              <td class="py-4 px-6 font-semibold">
+                <%= order.total_amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+              </td>
+              
+              <!-- Status Badge -->
+              <td class="py-4 px-6">
+                <% if (order.status === 'Completed') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-green-600 text-white"><%= order.status %></span>
+                <% } else if (order.status === 'Processing') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-blue-600 text-white"><%= order.status %></span>
+                <% } else if (order.status === 'Cancelled') { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-red-600 text-white"><%= order.status %></span>
+                <% } else { %>
+                  <span class="px-3 py-1 text-sm rounded-full bg-yellow-600 text-white"><%= order.status %></span>
+                <% } %>
+              </td>
+
+              <!-- Form Update Status -->
+              <td class="py-4 px-6">
+                <form action="/admin/orders/update-status/<%= order.order_id %>" method="POST" class="flex items-center space-x-2">
+                  <select name="new_status" class="bg-gray-700 text-white text-sm border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="Completed" <%= order.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+                    <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-3 rounded-md transition-all">
+                    Update
+                  </button>
+                </form>
+              </td>
+
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="6" class="py-10 px-6 text-center text-gray-500">Belum ada pesanan yang masuk.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<%- include('../../partials/footer') %>

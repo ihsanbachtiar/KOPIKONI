@@ -1,0 +1,59 @@
+<%- include('../../partials/header', { user: user }) %>
+
+<main class="flex-1 p-8 bg-gray-900">
+  <h2 class="text-3xl font-bold text-amber-300 mb-8">Edit Menu: <%= menuItem.name %></h2>
+
+  
+<div class="max-w-2xl mx-auto bg-gray-800 rounded-xl shadow-lg border border-gray-700 p-8">
+    
+<form action="/admin/menu/<%= menuItem.menu_id %>/edit" method="POST" enctype="multipart/form-data" class="space-y-6">
+      
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Nama Menu</label>
+        <input type="text" name="name" id="name" required value="<%= menuItem.name %>" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
+      </div>
+      
+      <div>
+        <label for="price" class="block text-sm font-medium text-gray-300 mb-2">Harga</label>
+        <input type="number" name="price" id="price" required value="<%= menuItem.price %>" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
+      </div>
+      
+      <div>
+        <label for="category_id" class="block text-sm font-medium text-gray-300 mb-2">Kategori</label>
+        <select name="category_id" id="category_id" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <% if (categories) { %>
+            <% categories.forEach(category => { %>
+              <option value="<%= category.category_id %>" <%= (menuItem.category_id == category.category_id) ? 'selected' : '' %>>
+                <%= category.category_name %>
+              </option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Deskripsi</label>
+        <textarea name="description" id="description" rows="4" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500"><%= menuItem.description %></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Gambar Saat Ini</label>
+        <img src="<%= menuItem.image ? menuItem.image : 'https://via.placeholder.com/150' %>" alt="<%= menuItem.name %>" class="w-32 h-32 object-cover rounded-md mb-4">
+        <label for="image" class="block text-sm font-medium text-gray-300 mb-2">Ganti Gambar (Opsional)</label>
+        <input type="file" name="image" id="image" accept="image/png, image/jpeg, image/webp" class="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 transition-all">
+      </div>
+
+      
+<div class="flex justify-end space-x-4 pt-6 border-t border-gray-700 mt-8">
+        <a href="/admin/menu" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg transition-all">
+          Batal
+        </a>
+        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-5 rounded-lg shadow-lg transform hover:scale-105 transition-all">
+          Update Menu
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../../partials/footer') %>

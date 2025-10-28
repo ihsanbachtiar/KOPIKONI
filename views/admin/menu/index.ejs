@@ -1,0 +1,61 @@
+<%- include('../../partials/header') %>
+
+<main class="flex-1 p-8 bg-gray-900">
+  
+  
+<div class="flex justify-between items-center mb-8">
+    <h2 class="text-3xl font-bold text-amber-300">Manajemen Menu</h2>
+    
+    <!-- INI ADALAH TOMBOL PENAMBAH MENU -->
+    <a href="/admin/menu/new" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
+      + Tambah Menu Baru
+    </a>
+  </div>
+
+  
+<div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+    <table class="w-full text-left text-gray-300">
+      <thead class="bg-gray-700 uppercase text-sm text-gray-400">
+        <tr>
+          <th class="py-3 px-6">Gambar</th>
+          <th class="py-3 px-6">Nama Menu</th>
+          <th class="py-3 px-6">Kategori</th>
+          <th class="py-3 px-6">Harga</th>
+          <th class="py-3 px-6">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (menuItems && menuItems.length > 0) { %>
+          <% menuItems.forEach(item => { %>
+            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+              <td class="py-4 px-6">
+                
+                <img src="<%= item.image ? item.image : 'https://via.placeholder.com/80' %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded-md">
+              </td>
+              <td class="py-4 px-6 font-medium text-white"><%= item.name %></td>
+              <td class="py-4 px-6"><%= item.category_name %></td> 
+              <td class="py-4 px-6">Rp <%= item.price.toLocaleString('id-ID') %></td>
+              <td class="py-4 px-6">
+                <a href="/admin/menu/<%= item.menu_id %>/edit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-3 rounded-md mr-2 transition-all">
+                  Edit
+                </a>
+                
+<form action="/admin/menu/<%= item.menu_id %>/delete" method="POST" class="inline-block" onsubmit="return confirm('Anda yakin ingin menghapus menu ini?');">
+                  <button type="submit" class="bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-3 rounded-md transition-all">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="5" class="py-6 px-6 text-center text-gray-500">Belum ada menu. Silakan tambahkan menu baru.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<%- include('../../partials/footer') %>

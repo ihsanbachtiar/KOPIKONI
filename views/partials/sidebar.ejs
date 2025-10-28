@@ -1,0 +1,97 @@
+
+<aside class="w-64 bg-gray-800 text-gray-300 shadow-xl border-r border-gray-700 flex-shrink-0 h-screen sticky top-0 flex flex-col p-6"> 
+  
+  <!-- Logo (Pindahan dari header) -->
+  <a href="/" class="text-2xl font-extrabold bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent mb-6" style="text-shadow: 0 0 12px rgba(252, 211, 77, 0.5);">
+    ☕ KopiKoni
+  </a>
+
+  <!-- Welcome Message -->
+  <div class="mb-4">
+    <p class="text-sm text-gray-500 uppercase tracking-wide">Selamat datang,</p>
+    <p class="text-xl font-semibold text-amber-300"><%= user ? user.name : 'Guest' %></p>
+  </div>
+  <!-- Navigasi (Dinamis berdasarkan role) -->
+  <nav class="space-y-2">
+    <ul>
+      <% if (user) { %>
+        
+        <!-- ====================== -->
+        <!-- == TAMPILAN ADMIN == -->
+        <!-- ====================== -->
+        <% if (user.role === 'admin') { %>
+          <li>
+            <a href="/admin/menu" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">📦</span> 
+              <span class="font-medium">Manajemen Menu</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/categories" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">🏷️</span> 
+              <span class="font-medium">Manajemen Kategori</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/orders" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">🧾</span> 
+              <span class="font-medium">Manajemen Order</span>
+            </a>
+          </li>
+
+        <!-- ======================== -->
+        <!-- == TAMPILAN CUSTOMER == -->
+        <!-- ======================== -->
+        <% } else { %>
+          
+          <li>
+            <a href="/dashboard" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">🏠</span> 
+              <span class="font-medium">Home</span>
+            </a>
+          </li>
+          
+          <li>
+            <button id="menuDropdownToggle" class="w-full flex justify-between items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 focus:outline-none group">
+              <span class="flex items-center">
+                <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">☕</span> 
+                <span class="font-medium">Kategori Menu</span>
+              </span>
+              <span id="menuDropdownArrow" class="transform transition-transform duration-200">▾</span>
+            </button>
+            
+            <ul id="menuDropdownContent" class="hidden mt-2 ml-4 pl-4 border-l-2 border-gray-600 space-y-1 text-gray-400">
+              <li><a href="/menu/all" class="block p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">Semua Menu</a></li>
+              <li><a href="/menu/all#coffee" class="block p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">Coffee</a></li>
+              <li><a href="/menu/all#non-coffee" class="block p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">Non-Coffee</a></li>
+              <li><a href="/menu/all#snack" class="block p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">Snack</a></li>
+              <li><a href="/menu/all#makanan-berat" class="block p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">Makanan Berat</a></li>
+            </ul>
+          </li>
+    
+          <li>
+            <a href="/order/cart" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">🛒</span> 
+              <span class="font-medium">Keranjang Saya</span>
+            </a>
+          </li>
+          
+          <li>
+            <a href="/order/history" class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+              <span class="text-amber-400 group-hover:text-amber-300 mr-3 text-lg">🧾</span> 
+              <span class="font-medium">Riwayat Pesanan</span>
+            </a>
+          </li>
+          
+        <% } %>
+      <% } %>
+    </ul>
+  </nav>
+
+  <!-- Logout Button (Pindahan dari header) -->
+  <!-- 'mt-auto' akan mendorong tombol ini ke paling bawah -->
+  <a href="/auth/logout" class="bg-red-700 px-4 py-2 rounded-lg hover:bg-red-800 transition-colors duration-300 mt-auto text-center font-medium">
+    Logout
+  </a>
+</aside>
+

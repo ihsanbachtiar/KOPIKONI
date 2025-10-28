@@ -1,0 +1,52 @@
+<%- include('../../partials/header') %>
+
+<section class="p-8" data-aos="fade-in">
+  
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-extrabold text-amber-300">Manajemen Kategori</h1>
+    <a href="/admin/categories/new" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
+      + Tambah Kategori Baru
+    </a>
+  </div>
+
+  <div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+    
+    <table class="w-full text-left text-gray-300">
+      <thead class="bg-gray-700 uppercase text-sm text-gray-400">
+        <tr>
+          <th class="py-3 px-6">ID Kategori</th>
+          <th class="py-3 px-6">Nama Kategori</th>
+          <th class="py-3 px-6">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (categories && categories.length > 0) { %>
+          <% categories.forEach(category => { %>
+            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+              <td class="py-4 px-6 font-mono text-gray-400">#<%= category.category_id %></td>
+              <td class="py-4 px-6 font-medium text-white text-lg"><%= category.category_name %></td>
+              <td class="py-4 px-6">
+                <a href="/admin/categories/<%= category.category_id %>/edit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-3 rounded-md mr-2 transition-all">
+                  Edit
+                </a>
+                
+                <form action="/admin/categories/<%= category.category_id %>/delete" method="POST" class="inline-block" onsubmit="return confirm('PENTING: Menghapus kategori ini juga akan menghapus SEMUA menu di dalamnya. Yakin?');">
+                  <button type="submit" class="bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-3 rounded-md transition-all">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="3" class="py-10 px-6 text-center text-gray-500">Belum ada kategori. Silakan tambahkan kategori baru.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<%- include('../../partials/footer') %>

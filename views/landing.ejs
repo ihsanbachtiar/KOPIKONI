@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>KopiKoni | Login</title>
+  <link href="/css/output.css" rel="stylesheet">
+</head>
+<body class="bg-amber-50 flex items-center justify-center h-screen">
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-96">
+    <h1 class="text-2xl font-bold text-center text-amber-800 mb-6">Selamat Datang di KopiKoni</h1>
+
+    <% if (typeof error !== 'undefined') { %>
+      <p class="text-red-600 text-sm text-center mb-3"><%= error %></p>
+    <% } %>
+
+    <form action="/auth/login" method="POST" class="space-y-4">
+      <input type="email" name="email" placeholder="Email"
+        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+      <input type="password" name="password" placeholder="Password"
+        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+      <button type="submit"
+        class="w-full bg-amber-700 text-white py-2 rounded-lg hover:bg-amber-800 transition">Masuk</button>
+    </form>
+
+    <p class="text-sm text-center mt-4">
+      Belum punya akun?
+      <a href="/auth/register" class="text-amber-600 font-semibold hover:underline">Daftar</a>
+    </p>
+  </div>
+</body>
+</html>
