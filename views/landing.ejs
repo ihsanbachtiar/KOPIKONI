@@ -2,30 +2,158 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>KopiKoni | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | KopiKoni</title>
   <link href="/css/output.css" rel="stylesheet">
-</head>
-<body class="bg-amber-50 flex items-center justify-center h-screen">
-  <div class="bg-white shadow-lg rounded-2xl p-8 w-96">
-    <h1 class="text-2xl font-bold text-center text-amber-800 mb-6">Selamat Datang di KopiKoni</h1>
+  
+  <style>
+    /* Bintang-bintang */
+    .stars, .stars2, .stars3 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* agar tidak menghalangi interaksi */
+      background: transparent;
+    }
+    .stars {
+      background-image: radial-gradient(circle, rgba(252, 211, 77, 0.8) 1px, transparent 1px); /* Amber */
+      background-size: 60px 60px; /* Jarak antar bintang */
+      animation: animateStars 100s linear infinite;
+    }
 
-    <% if (typeof error !== 'undefined') { %>
-      <p class="text-red-600 text-sm text-center mb-3"><%= error %></p>
+    /* Set kedua (sedang, sedang, warna kuning muda) */
+    .stars2 {
+      background-image: radial-gradient(circle, rgba(253, 224, 71, 0.6) 1px, transparent 1px); /* Kuning */
+      background-size: 70px 70px;
+      animation: animateStars 70s linear infinite;
+    }
+
+    /* Set ketiga (lebih kecil, lebih cepat, warna putih redup) */
+    .stars3 {
+      background-image: radial-gradient(circle, rgba(229, 231, 235, 0.4) 1px, transparent 1px); /* Abu-abu terang */
+      background-size: 50px 50px;
+      animation: animateStars 50s linear infinite;
+    }
+
+    /* Keyframes untuk animasi bintang */
+    @keyframes animateStars {
+      from { transform: translateY(0); }
+      to { transform: translateY(100vh); } /* Bintang bergerak dari atas ke bawah */
+    }
+
+    /* Agar animasi bintang tidak terlalu jauh ke bawah (opsional, bisa disesuaikan) */
+    body {
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased flex items-center justify-center min-h-screen p-4 overflow-hidden">
+
+  <div class="absolute inset-0 z-0 overflow-hidden">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+  </div>
+  <div class="relative z-10 bg-gray-800 shadow-2xl rounded-2xl p-6 md:p-8 w-full max-w-sm border border-gray-700" data-aos="fade-in">
+    <h1 class="text-3xl font-bold text-center text-amber-300 mb-6" style="text-shadow: 0 0 12px rgba(252, 211, 77, 0.5);">
+      ☕ KopiKoni
+    </h1>
+
+    <div class="flex mb-6 border-b border-gray-600">
+      <button id="tabCustomer" 
+              onclick="switchTab('customer')"
+              class="flex-1 py-3 text-center font-semibold border-b-2 transition-all duration-300 border-amber-500 text-white">
+        Login Customer
+      </button>
+      <button id="tabAdmin" 
+              onclick="switchTab('admin')"
+              class="flex-1 py-3 text-center font-semibold border-b-2 transition-all duration-300 border-transparent text-gray-500 hover:text-gray-300">
+        Login Admin
+      </button>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg mb-6 text-center" role="alert">
+        <%= error %>
+      </div>
     <% } %>
 
-    <form action="/auth/login" method="POST" class="space-y-4">
-      <input type="email" name="email" placeholder="Email"
-        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
-      <input type="password" name="password" placeholder="Password"
-        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
-      <button type="submit"
-        class="w-full bg-amber-700 text-white py-2 rounded-lg hover:bg-amber-800 transition">Masuk</button>
-    </form>
+    <div id="panelCustomer">
+      <form action="/auth/login" method="POST" class="space-y-4">
+        <input type="hidden" name="login_as" value="customer">
+        <div>
+          <label for="email_customer" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+          <input type="email" name="email" id="email_customer" placeholder="email@anda.com"
+            class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+        </div>
+        <div>
+          <label for="password_customer" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+          <input type="password" name="password" id="password_customer" placeholder="••••••••"
+            class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+        </div>
+        <button type="submit"
+          class="w-full bg-amber-600 text-white py-3 rounded-lg font-bold hover:bg-amber-700 transition duration-300 transform hover:scale-105">
+          Login sebagai Customer
+        </button>
+      </form>
+      <p class="text-sm text-center text-gray-400 mt-6">
+        Belum punya akun?
+        <a href="/auth/register" class="text-amber-400 font-semibold hover:underline">Daftar di sini</a>
+      </p>
+    </div>
 
-    <p class="text-sm text-center mt-4">
-      Belum punya akun?
-      <a href="/auth/register" class="text-amber-600 font-semibold hover:underline">Daftar</a>
-    </p>
+    <div id="panelAdmin" class="hidden">
+      <form action="/auth/login" method="POST" class="space-y-4">
+        <input type="hidden" name="login_as" value="admin">
+        <div>
+          <label for="email_admin" class="block text-sm font-medium text-gray-300 mb-2">Email Admin</label>
+          <input type="email" name="email" id="email_admin" placeholder="admin@kopikoni.com"
+            class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+        </div>
+        <div>
+          <label for="password_admin" class="block text-sm font-medium text-gray-300 mb-2">Password Admin</label>
+          <input type="password" name="password" id="password_admin" placeholder="••••••••"
+            class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+        </div>
+        <button type="submit"
+          class="w-full bg-gray-600 text-white py-3 rounded-lg font-bold hover:bg-gray-700 transition duration-300 transform hover:scale-105">
+          Login sebagai Admin
+        </button>
+      </form>
+    </div>
   </div>
+
+  <script>
+    const tabCustomer = document.getElementById('tabCustomer');
+    const tabAdmin = document.getElementById('tabAdmin');
+    const panelCustomer = document.getElementById('panelCustomer');
+    const panelAdmin = document.getElementById('panelAdmin');
+
+    function switchTab(tab) {
+      if (tab === 'admin') {
+        panelAdmin.classList.remove('hidden');
+        panelCustomer.classList.add('hidden');
+        tabAdmin.classList.add('border-amber-500', 'text-white');
+        tabAdmin.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-300');
+        tabCustomer.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-300');
+        tabCustomer.classList.remove('border-amber-500', 'text-white');
+      } else {
+        panelCustomer.classList.remove('hidden');
+        panelAdmin.classList.add('hidden');
+        tabCustomer.classList.add('border-amber-500', 'text-white');
+        tabCustomer.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-300');
+        tabAdmin.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-300');
+        tabAdmin.classList.remove('border-amber-500', 'text-white');
+      }
+    }
+  </script>
+
+  <% if (typeof activeTab !== 'undefined' && activeTab === 'admin') { %>
+    <script>
+      switchTab('admin');
+    </script>
+  <% } %>
 </body>
 </html>

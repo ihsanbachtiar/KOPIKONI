@@ -1,25 +1,39 @@
-</main> </div> <script src="/vendor/aos/aos.js"></script>
-  
-  <script>
-    // Inisialisasi AOS (dengan 'scrollContainer' untuk 'main')
-    AOS.init({
-      scrollContainer: '#main-content-area',
-      duration: 800, 
-      once: true,    
-      mirror: false, 
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    // ---- Sidebar Toggle for Mobile ----
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle'); // Tombol di luar sidebar
+    const mobileSidebarToggle = document.getElementById('mobileSidebarToggle'); // Tombol di header mobile
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // Helper: Fungsi untuk format mata uang
-    function formatCurrency(amount) {
-      // Menggunakan Intl.NumberFormat untuk format Rupiah tanpa desimal
-      return new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0
-      }).format(amount);
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+    };
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', toggleSidebar);
     }
-    
-    // --- MODAL KUANTITAS ---
+    if (mobileSidebarToggle) { // Pastikan tombol ini ada di header mobile
+      mobileSidebarToggle.addEventListener('click', toggleSidebar);
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', toggleSidebar); // Menutup sidebar saat klik overlay
+    }
+
+
+    // ---- Menu Dropdown Toggle ----
+    const menuDropdownToggle = document.getElementById('menuDropdownToggle');
+    const menuDropdownContent = document.getElementById('menuDropdownContent');
+    const menuDropdownArrow = document.getElementById('menuDropdownArrow');
+
+    if (menuDropdownToggle && menuDropdownContent && menuDropdownArrow) {
+        menuDropdownToggle.addEventListener('click', () => {
+            menuDropdownContent.classList.toggle('hidden');
+            menuDropdownArrow.classList.toggle('rotate-180'); // Memutar panah saat terbuka
+        });
+    }
+
+    // ---- Modal Add to Cart Logic (Sama seperti sebelumnya) ----
     const quantityModal = document.getElementById('quantityModal');
     const closeQuantityModalBtn = document.getElementById('closeQuantityModal');
     const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -34,6 +48,15 @@
     const increaseQuantityBtn = document.getElementById('increaseQuantity');
 
     let currentItemPrice = 0; // Menyimpan harga item yang sedang dipilih
+
+    // Helper: Fungsi untuk format mata uang
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0
+      }).format(amount);
+    }
 
     // Fungsi untuk mengupdate total harga di modal
     const updateModalTotal = () => {
@@ -58,17 +81,19 @@
     };
 
     // Event listener untuk tombol 'Tambah ke Keranjang'
-    addToCartButtons.forEach(button => {
-      button.addEventListener('click', (event) => {
-        const menu = {
-          id: button.dataset.menuId,
-          name: button.dataset.menuName,
-          price: button.dataset.menuPrice,
-          image: button.dataset.menuImage
-        };
-        openModal(menu);
+    if (addToCartButtons.length > 0) { // Hanya jalankan jika tombol ada
+      addToCartButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+          const menu = {
+            id: button.dataset.menuId,
+            name: button.dataset.menuName,
+            price: button.dataset.menuPrice,
+            image: button.dataset.menuImage
+          };
+          openModal(menu);
+        });
       });
-    });
+    }
 
     // Event listeners untuk tombol +/-
     if (decreaseQuantityBtn && increaseQuantityBtn) {
@@ -100,51 +125,4 @@
         }
       });
     }
-
-
-    const checkoutPopupBtn = document.getElementById('checkout-popup-btn');
-    const checkoutModal = document.getElementById('checkout-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const closeModalBg = document.getElementById('checkout-modal-bg'); // Tambahkan ID ini di modal bg
-
-    if (checkoutPopupBtn && checkoutModal && closeModalBtn) {
-      checkoutPopupBtn.addEventListener('click', () => {
-        checkoutModal.classList.remove('hidden');
-      });
-      
-      const closeFn = () => {
-        checkoutModal.classList.add('hidden');
-      };
-      
-      closeModalBtn.addEventListener('click', closeFn);
-      if (closeModalBg) {
-        closeModalBg.addEventListener('click', closeFn);
-      }
-      
-      // Versi lama Anda:
-      // checkoutModal.addEventListener('click', (e) => {
-      //   if (e.target === checkoutModal) {
-      //     checkoutModal.classList.add('hidden');
-      //   }
-      // });
-    }
-
-    // Script untuk notifikasi sukses (di halaman keranjang)
-    const successNotification = document.getElementById('success-notification');
-    const closeNotificationBtn = document.getElementById('close-notification-btn');
-
-    const closeNotif = () => {
-      if (successNotification) {
-        successNotification.style.transition = 'opacity 0.5s ease';
-        successNotification.style.opacity = '0';
-        setTimeout(() => {
-          successNotification.remove();
-        }, 500);
-      }
-    };
-    // --- SCRIPT LAIN (Dropdown, Checkout, Notifikasi) ---
-    // (Tambahkan script untuk dropdown sidebar, checkout modal, dan notifikasi di sini)
-  </script>
-
-</body>
-</html>
+});

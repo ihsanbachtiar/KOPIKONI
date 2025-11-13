@@ -7,10 +7,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-
-// =============================
-// Import koneksi database
-// =============================
 const db = require('./config/db');
 
 // =============================
@@ -20,7 +16,8 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth'); // router login & register
 const adminRouter = require('./routes/admin'); 
-const orderRouter = require('./routes/order'); // Router untuk keranjang
+const orderRouter = require('./routes/order');
+const menuRouter = require('./routes/menu'); // Router untuk keranjang
 
 // =============================
 // Inisialisasi app
@@ -78,7 +75,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter); 
 app.use('/admin', adminRouter); 
-app.use('/order', orderRouter); // Menangani /order/cart, /order/add
+app.use('/order', orderRouter);
+app.use('/menu', menuRouter);
 
 // =============================
 // Tangani error 404

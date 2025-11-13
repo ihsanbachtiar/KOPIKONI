@@ -141,26 +141,39 @@ router.post('/menu/:id/delete', isAdmin, async (req, res) => {
  */
 router.get('/orders', isAdmin, async (req, res) => {
   try {
-    // Ambil semua pesanan, di-JOIN dengan nama user
     const [orders] = await db.query(
       `SELECT o.*, u.name AS user_name 
        FROM orders o
-       LEFT JOIN user u ON o.user_id = u.user_id
+       LEFT JOIN user u ON o.user_id = u.user_id -- 'user' (singular) sesuai screenshot DB Anda
        ORDER BY 
          CASE o.status
            WHEN 'Pending' THEN 1
            WHEN 'Processing' THEN 2
            WHEN 'Completed' THEN 3
            WHEN 'Cancelled' THEN 4
-           ELSE 5 -- Urutan default jika ada status lain
-         END, o.order_date DESC` // Urutkan berdasarkan status, lalu tanggal terbaru
+         END, o.order_date DESC`
     );
     
-    // Render view dan kirim data orders
-    res.render('admin/orders/index', { orders: orders }); // Pastikan path ini benar
+    // Ambil detail item untuk setiap pesanan
+    for (let order of orders) {
+      // PERBAIKI NAMA TABEL: order_item (singular)
+      const [items] = await db.query(
+        `SELECT oi.quantity, oi.price_per_item, mi.name AS menu_name
+         FROM order_item oi 
+         JOIN menu_items mi ON oi.menu_id = mi.menu_id
+         WHERE oi.order_id = ?`,
+        [order.order_id]
+      );
+      order.items = items;
+    }
+
+    res.render('admin/orders/index', { 
+      orders: orders,
+      user: req.session.user 
+    });
   } catch (err) {
     console.error("Error fetching all orders:", err);
-    res.status(500).send("Terjadi error saat mengambil data pesanan.");
+    res.status(500).send("Terjadi error.");
   }
 });
 

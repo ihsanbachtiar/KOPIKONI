@@ -138,4 +138,3 @@ router.get('/history', isCustomer, async (req, res) => {
 });
 
 module.exports = router;
-

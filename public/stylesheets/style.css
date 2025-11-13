@@ -6,3 +6,40 @@ body {
 a {
   color: #00B7FF;
 }
+/* Animasi Logo */
+@keyframes pulse-light {
+  0% { text-shadow: 0 0 5px rgba(252, 211, 77, 0.3); }
+  50% { text-shadow: 0 0 15px rgba(252, 211, 77, 0.7); }
+  100% { text-shadow: 0 0 5px rgba(252, 211, 77, 0.3); }
+}
+
+.animate-pulse-light {
+  animation: pulse-light 2s infinite ease-in-out;
+}
+
+/* Animasi untuk ikon dropdown panah */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Base styles for the modal (optional, Tailwind handles most) */
+input[type='number'].custom-number-input::-webkit-outer-spin-button,
+input[type='number'].custom-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='number'].custom-number-input {
+    -moz-appearance: textfield;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+/* Styling untuk main-content-area agar bisa di-scroll secara independen */
+#main-content-area {
+  flex-grow: 1; /* Memungkinkan main area mengambil ruang yang tersedia */
+  overflow-y: auto; /* Memungkinkan scrolling vertikal */
+  -webkit-overflow-scrolling: touch; /* Meningkatkan performa scrolling di iOS */
+}
