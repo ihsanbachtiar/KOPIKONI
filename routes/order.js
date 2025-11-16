@@ -44,26 +44,68 @@ router.post('/add', isCustomer, async (req, res) => {
     res.status(500).send("Terjadi error pada server.");
   }
 });
-router.get('/cart', isCustomer, (req, res) => {
-  
-  const successMsg = req.session.success_message;
-  delete req.session.success_message;
+/* GET /order/cart (Menampilkan halaman keranjang dari SESSION) */
+router.get('/cart', isCustomer, async (req, res) => {
+  const message = req.session.message;
+  delete req.session.message;
 
-  if (!req.session.cart || req.session.cart.totalQty === 0) {
-    return res.render('order/cart', {
-      items: null, 
-      totalPrice: 0,
-      success_message: successMsg
-    });
+  let paymentMethods = [];
+  try {
+    const [methods] = await db.query(`SELECT method_id, method_name FROM payment_methods WHERE is_active = 1 ORDER BY method_name`);
+    paymentMethods = methods;
+  } catch (error) {
+    console.error("Error fetching payment methods:", error);
   }
   
-  const cart = req.session.cart;
-  const itemsArray = Object.values(cart.items);
+  // =======================================================
+  // Bagian yang DITAMBAHKAN/DIPERBAIKI
+  // Pastikan variabel ini dideklarasikan sebelum digunakan
+  // =======================================================
+  let cartItems = [];
+  let totalPrice = 0;
+  let totalQty = 0;
 
+  if (req.session.cart && req.session.cart.items && Object.keys(req.session.cart.items).length > 0) {
+    const cart = req.session.cart;
+    cartItems = Object.values(cart.items);
+    totalPrice = cart.totalPrice;
+    totalQty = cart.totalQty;
+  }
+  // =======================================================
+  // Akhir Bagian yang DITAMBAHKAN/DIPERBAIKI
+  // =======================================================
+
+
+  // Ambil status pesanan terbaru untuk sidebar
+  let latestOrderStatus = null;
+  if (req.session.user && req.session.user.user_id) {
+    try {
+      const [latestOrder] = await db.query(
+        `SELECT order_id, status 
+         FROM orders 
+         WHERE user_id = ? 
+         ORDER BY order_date DESC 
+         LIMIT 1`,
+        [req.session.user.user_id]
+      );
+      if (latestOrder.length > 0) {
+        latestOrderStatus = latestOrder[0];
+      }
+    } catch (err) {
+      console.error("Error fetching latest order status for sidebar:", err);
+    }
+  }
+
+  // Render halaman keranjang
   res.render('order/cart', {
-    items: itemsArray,
-    totalPrice: cart.totalPrice,
-    success_message: successMsg // Kirim pesannya
+    user: req.session.user,
+    items: cartItems, // Sekarang cartItems sudah didefinisikan
+    totalPrice: totalPrice,
+    totalQty: totalQty,
+    paymentMethods: paymentMethods,
+    message: message,
+    latestOrderStatus: latestOrderStatus,
+    title: 'Keranjang Belanja KopiKoni'
   });
 });
 
@@ -81,60 +123,144 @@ router.post('/remove/:id', isCustomer, (req, res) => {
   res.redirect('/order/cart');
 });
 
-router.post('/submit', isCustomer, async (req, res) => {
-  try {
-    const cart = req.session.cart;
-    const { name, address, payment_method } = req.body;
-    const user_id = req.session.user.user_id;
-
-    if (!cart || cart.totalQty === 0) {
-      return res.redirect('/order/cart');
+/* POST /order/submit (Proses checkout - Sesuai action di cart.ejs) */
+router.post('/submit', isCustomer, async (req, res) => { // <--- Route diubah menjadi /submit
+    if (!req.session.user) {
+        req.session.message = { type: 'error', text: 'Anda harus login untuk melakukan checkout.' };
+        return res.redirect('/auth');
     }
 
-    const [orderResult] = await db.query(
-      `INSERT INTO orders (user_id, total_amount, status, customer_name, customer_address, payment_method) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [user_id, cart.totalPrice, 'Pending', name, address, payment_method]
-    );
-    const newOrderId = orderResult.insertId;
+    const userId = req.session.user.user_id;
+    // Mengambil nama input yang sesuai dengan form di cart.ejs
+    const { customer_name, customer_address, payment_method_id } = req.body; // Sesuaikan dengan name di form
+    const cart = req.session.cart;
 
-    const orderItems = Object.values(cart.items).map(itemData => [
-      newOrderId,
-      itemData.item.menu_id,
-      itemData.qty,
-      itemData.item.price
-    ]);
-    await db.query(
-      `INSERT INTO order_item (order_id, menu_id, quantity, price_per_item) 
-       VALUES ?`,
-      [orderItems]
-    );
-    delete req.session.cart;
-    req.session.success_message = "Pesanan Anda telah berhasil dibuat! Silakan cek riwayat pesanan Anda.";
-    res.redirect('/order/cart');
+    // Pastikan keranjang tidak kosong
+    if (!cart || !cart.items || Object.keys(cart.items).length === 0) {
+        req.session.message = { type: 'error', text: 'Keranjang Anda kosong. Tidak dapat melakukan checkout.' };
+        return res.redirect('/order/cart');
+    }
 
-  } catch (err) {
-    console.error("Error submitting order:", err);
-    res.status(500).send("Terjadi error saat memproses pesanan.");
-  }
+    const totalPrice = cart.totalPrice;
+    const transaction = await db.getConnection(); // Dapatkan koneksi untuk transaksi
+
+    try {
+        await transaction.beginTransaction(); // Mulai transaksi
+        console.log('Transaksi dimulai.'); // Log 1
+
+        // 1. Masukkan data pesanan ke tabel 'orders'
+        const [orderResult] = await transaction.query(
+            `INSERT INTO orders (user_id, order_date, total_amount, status, customer_name, customer_address, payment_method_id)
+             VALUES (?, NOW(), ?, 'Pending', ?, ?, ?)`,
+            [userId, totalPrice, customer_name, customer_address, payment_method_id]
+        );
+        const orderId = orderResult.insertId;
+        console.log(`Pesanan utama (order_id: ${orderId}) berhasil dimasukkan.`); // Log 2
+
+        // 2. Masukkan item-item dari keranjang ke tabel 'order_item'
+        for (const itemId in cart.items) {
+            const item = cart.items[itemId];
+            await transaction.query(
+                `INSERT INTO order_item (order_id, menu_id, quantity, price_per_item)
+                 VALUES (?, ?, ?, ?)`,
+                [orderId, item.item.menu_id, item.qty, item.item.price]
+            );
+            console.log(`  - Item (menu_id: ${item.item.menu_id}, qty: ${item.qty}) berhasil dimasukkan.`); // Log 3
+        }
+
+        await transaction.commit(); // Commit transaksi jika semua berhasil
+        console.log('Transaksi berhasil di-commit. Pesanan tersimpan di database.'); // Log 4
+
+        // 3. Kosongkan keranjang di sesi setelah checkout berhasil
+        req.session.cart = { items: {}, totalPrice: 0, totalQty: 0 };
+        req.session.message = { type: 'success', text: 'Pesanan Anda berhasil dibuat!' };
+        
+        // 4. Redirect ke halaman riwayat pesanan
+        res.redirect('/order/history');
+
+    } catch (error) {
+        await transaction.rollback(); // Rollback transaksi jika ada error
+        console.error('Error saat checkout:', error); // Pastikan ini mengeluarkan error detail
+        req.session.message = { type: 'error', text: 'Checkout gagal. Silakan coba lagi.' };
+        res.redirect('/order/cart'); // Kembali ke keranjang jika gagal
+    } finally {
+        transaction.release();
+        console.log('Koneksi transaksi dilepaskan.'); // Log 5
+    }
 });
 
-router.get('/success', isCustomer, (req, res) => {
-  res.render('order/success'); 
-});
-
+/* GET /order/history (Menampilkan riwayat pesanan) */
 router.get('/history', isCustomer, async (req, res) => {
-  try {
-    const user_id = req.session.user.user_id;
-    const [orders] = await db.query(
-      `SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC`,
-      [user_id]
-    );
-    res.render('order/history', { orders: orders });
-  } catch (err) {
-    console.error("Error fetching order history:", err);
-    res.status(500).send("Terjadi error.");
-  }
+    const message = req.session.message;
+    delete req.session.message;
+
+    let orders = [];
+    let latestOrderStatus = null;
+
+    if (req.session.user && req.session.user.user_id) {
+        const userId = req.session.user.user_id;
+        console.log(`Mengambil riwayat pesanan untuk user_id: ${userId}`);
+
+        try {
+            const [userOrders] = await db.query(
+                `SELECT 
+                    o.order_id,
+                    o.order_date,
+                    o.total_amount,
+                    o.status,
+                    o.customer_name,
+                    o.customer_address,
+                    pm.method_name AS payment_method
+                 FROM orders o
+                 JOIN payment_methods pm ON o.payment_method_id = pm.method_id
+                 WHERE o.user_id = ?
+                 ORDER BY o.order_date DESC`,
+                [userId]
+            );
+            console.log(`Ditemukan ${userOrders.length} pesanan utama.`);
+
+            for (let order of userOrders) {
+                const [orderItems] = await db.query(
+                    `SELECT 
+                        oi.quantity,
+                        oi.price_per_item,
+                        m.name AS menu_name,
+                        m.image AS menu_image
+                     FROM order_item oi  
+                     JOIN menu_items m ON oi.menu_id = m.menu_id -- <--- PERUBAHAN UTAMA DI SINI: menu_items
+                     WHERE oi.order_id = ?`,
+                    [order.order_id]
+                );
+                order.items = orderItems;
+                console.log(`  - Pesanan #${order.order_id} memiliki ${orderItems.length} item.`);
+            }
+            orders = userOrders;
+            console.log('Objek orders siap untuk dirender:', orders);
+
+            if (orders.length > 0) {
+                latestOrderStatus = {
+                    order_id: orders[0].order_id,
+                    status: orders[0].status
+                };
+            }
+
+        } catch (error) {
+            console.error("Error fetching order history:", error); // Ini akan mencetak error jika ada masalah lain
+            req.session.message = { type: 'error', text: 'Gagal mengambil riwayat pesanan.' };
+            return res.redirect('/dashboard');
+        }
+    } else {
+        req.session.message = { type: 'error', text: 'Anda harus login untuk melihat riwayat pesanan.' };
+        return res.redirect('/auth');
+    }
+
+    res.render('order/history', {
+        user: req.session.user,
+        orders: orders,
+        latestOrderStatus: latestOrderStatus,
+        message: message,
+        title: 'Riwayat Pesanan KopiKoni'
+    });
 });
 
 module.exports = router;

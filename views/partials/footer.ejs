@@ -18,6 +18,21 @@
           maximumFractionDigits: 0
       }).format(amount);
     }
+
+    const menuDropdownToggle = document.getElementById('menuDropdownToggle');
+    const menuDropdownContent = document.getElementById('menuDropdownContent');
+    const menuDropdownArrow = document.getElementById('menuDropdownArrow');
+
+    // Cek jika elemen ada (aman untuk admin & customer)
+    if (menuDropdownToggle && menuDropdownContent && menuDropdownArrow) {
+      menuDropdownToggle.addEventListener('click', function() {
+        // Toggle (buka/tutup) class 'hidden' pada konten dropdown
+        menuDropdownContent.classList.toggle('hidden');
+        
+        // Putar panah (pastikan 'rotate-180' ada di output.css Anda)
+        menuDropdownArrow.classList.toggle('rotate-180'); 
+      });
+    }
     
     // --- MODAL KUANTITAS ---
     const quantityModal = document.getElementById('quantityModal');
@@ -142,6 +157,76 @@
         }, 500);
       }
     };
+
+    /* =======================================================
+       SCRIPT BARU UNTUK TOGGLE DETAIL RIWAYAT PESANAN
+       =======================================================
+    */
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.order-toggle-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.dataset.orderId;
+                const detailsContent = document.getElementById(`order-details-${orderId}`);
+                const arrowIcon = this.querySelector('.order-arrow-icon');
+
+                if (detailsContent && arrowIcon) {
+                    detailsContent.classList.toggle('hidden');
+                    arrowIcon.classList.toggle('rotate-180');
+                }
+            });
+        });
+    });
+
+    // Sidebar toggle (jika ada, pastikan id tombol sudah benar di header/sidebar)
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); 
+    const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+      });
+    }
+
+    if (sidebarCloseBtn) {
+      sidebarCloseBtn.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    // Category menu toggle
+    const categoryToggle = document.getElementById('category-toggle');
+    const categoryMenu = document.getElementById('category-menu');
+    if (categoryToggle && categoryMenu) {
+      categoryToggle.addEventListener('click', () => {
+        categoryMenu.classList.toggle('hidden');
+        categoryToggle.querySelector('svg').classList.toggle('rotate-180');
+      });
+    }
+
+    // --- SCRIPT BARU UNTUK TOGGLE DETAIL RIWAYAT PESANAN ---
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.order-toggle-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            const detailsContent = document.getElementById(`order-details-${orderId}`);
+            const arrowIcon = this.querySelector('.order-arrow-icon');
+
+            if (detailsContent && arrowIcon) {
+                detailsContent.classList.toggle('hidden');
+                arrowIcon.classList.toggle('rotate-180');
+            }
+        });
+    });
+
+    // Script untuk notifikasi sukses (jika ada di halaman ini)
+    const messageNotification = document.getElementById('message-notification');
+    if (messageNotification) {
+        setTimeout(() => {
+            messageNotification.classList.add('hidden');
+        }, 5000); 
+    }
+});
     // --- SCRIPT LAIN (Dropdown, Checkout, Notifikasi) ---
     // (Tambahkan script untuk dropdown sidebar, checkout modal, dan notifikasi di sini)
   </script>

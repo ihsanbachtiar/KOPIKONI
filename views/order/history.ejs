@@ -1,55 +1,124 @@
-<%- include('../partials/header') %>
+<%- include('../partials/header', { user: user, latestOrderStatus: latestOrderStatus, title: 'Riwayat Pesanan' }) %>
 
-<section class="p-8 relative" data-aos="fade-in">
-  <h1 class="text-4xl font-extrabold text-amber-300 mb-10">Riwayat Pesanan Saya</h1>
+  <section class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-amber-300 mb-8">Riwayat Pesanan Anda</h1>
 
-  <div class="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
-    
-    <table class="w-full text-left text-gray-300">
-      <thead class="bg-gray-700 uppercase text-sm text-gray-400">
-        <tr>
-          <th class="py-3 px-6">Order ID</th>
-          <th class="py-3 px-6">Tanggal</th>
-          <th class="py-3 px-6">Total</th>
-          <th class="py-3 px-6">Status</th>
-          <th class="py-3 px-6">Alamat</th>
-          <th class="py-3 px-6">Pembayaran</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (orders && orders.length > 0) { %>
-          <% orders.forEach(order => { %>
-            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
-              <td class="py-4 px-6 font-mono text-amber-400">#<%= order.order_id %></td>
-              <td class="py-4 px-6"><%= new Date(order.order_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) %></td>
-              <td class="py-4 px-6 font-semibold">
-                <%= order.total_amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
-              </td>
-              <td class="py-4 px-6">
-                <!-- Logika Status Badge -->
-                <% if (order.status === 'completed') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-green-600 text-white"><%= order.status %></span>
-                <% } else if (order.status === 'processing') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-blue-600 text-white"><%= order.status %></span>
-                <% } else if (order.status === 'cancelled') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-red-600 text-white"><%= order.status %></span>
+    <% if (message && message.text) { %>
+      <div id="message-notification" class="fixed top-24 right-8 z-50 p-6 rounded-xl shadow-lg max-w-sm
+          <%= message.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white' %>" 
+          data-aos="fade-left">
+        <div class="flex items-center">
+          <span class="text-3xl mr-4"><%= message.type === 'success' ? '🎉' : '❌' %></span>
+          <div>
+            <h3 class="text-xl font-bold"><%= message.type === 'success' ? 'Pesanan Berhasil!' : 'Terjadi Kesalahan!' %></h3>
+            <p class="<%= message.type === 'success' ? 'text-green-100' : 'text-red-100' %>"><%= message.text %></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (orders && orders.length > 0) { %>
+      <div class="space-y-6">
+        <% orders.forEach(order => { %>
+          <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 cursor-pointer order-toggle-btn" data-order-id="<%= order.order_id %>">
+              <div>
+                <h2 class="text-2xl font-bold text-white mb-1">Pesanan #<%= order.order_id %></h2>
+                <p class="text-gray-400 text-sm">
+                  Tanggal: <%= new Date(order.order_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                </p>
+                <p class="text-gray-300 text-md mt-2">
+                  Total: <span class="font-bold text-amber-400"><%= parseFloat(order.total_amount).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %></span>
+                </p>
+              </div>
+              <div class="mt-4 md:mt-0 flex items-center space-x-2">
+                <% 
+                    let statusClass = 'bg-gray-600 text-white'; // Default
+                    if (order.status === 'completed') {
+                        statusClass = 'bg-green-600 text-white';
+                    } else if (order.status === 'processing') {
+                        statusClass = 'bg-blue-600 text-white';
+                    } else if (order.status === 'pending') {
+                        statusClass = 'bg-yellow-600 text-white';
+                    } else { // Jika status lain yang tidak dikenal
+                        statusClass = 'bg-purple-600 text-white'; 
+                    }
+                %>
+                <span class="px-3 py-1 rounded-full text-sm font-semibold <%= statusClass %>">
+                  <%= order.status %>
+                </span>
+                <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-300 order-arrow-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"data-aos="fade-down"></path></svg>
+              </div>
+            </div>
+
+            <div id="order-details-<%= order.order_id %>" class="order-details-content hidden mt-6 pt-4 border-t border-gray-700">
+              <p class="text-gray-300 mb-2">
+                <span class="font-semibold">Nama Penerima:</span> <%= order.customer_name %>
+              </p>
+              <p class="text-gray-300 mb-4">
+                <span class="font-semibold">Alamat:</span> <%= order.customer_address %>
+              </p>
+              <p class="text-gray-300 mb-4">
+                <span class="font-semibold">Metode Pembayaran:</span> <%= order.payment_method %>
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Produk Dipesan:</h3>
+              <div class="space-y-3">
+                <% if (order.items && order.items.length > 0) { %>
+                  <% order.items.forEach(item => { %>
+                    <div class="flex items-center bg-gray-900 p-3 rounded-md border border-gray-700">
+                      <img src="<%= item.menu_image ? item.menu_image : '/images/placeholder-menu.jpg' %>" alt="<%= item.menu_name %>" class="w-16 h-16 object-cover rounded-md mr-4 border border-gray-600">
+                      <div class="flex-grow">
+                        <p class="font-semibold text-white"><%= item.menu_name %></p>
+                        <p class="text-sm text-gray-400">
+                          <%= item.quantity %> x <%= parseFloat(item.price_per_item).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                        </p>
+                      </div>
+                      <span class="font-bold text-amber-400">
+                        <%= (item.quantity * parseFloat(item.price_per_item)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                      </span>
+                    </div>
+                  <% }); %>
                 <% } else { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-yellow-600 text-white"><%= order.status %></span>
+                  <p class="text-gray-400">Tidak ada item dalam pesanan ini.</p>
                 <% } %>
-              </td>
-              <td class="py-4 px-6 text-sm text-gray-400"><%= order.customer_address %></td>
-              <td class="py-4 px-6"><%= order.payment_method %></td>
-            </tr>
-          <% }); %>
-        <% } else { %>
-          <tr>
-            <td colspan="6" class="py-10 px-6 text-center text-gray-500">Anda belum memiliki riwayat pesanan.</td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-12 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+        <p class="text-2xl text-gray-400 mb-4">Anda belum memiliki riwayat pesanan.</p>
+        <a href="/dashboard" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+          Lihat Menu
+        </a>
+      </div>
+    <% } %>
+  </section>
 
-  </div>
-</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.order-toggle-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const orderId = this.dataset.orderId;
+        const detailsContent = document.getElementById(`order-details-${orderId}`);
+        const arrowIcon = this.querySelector('.order-arrow-icon');
+
+        if (detailsContent && arrowIcon) {
+            detailsContent.classList.toggle('hidden');
+            arrowIcon.classList.toggle('rotate-180');
+        }
+      });
+    });
+
+    const messageNotification = document.getElementById('message-notification');
+    if (messageNotification) {
+      setTimeout(() => {
+        messageNotification.classList.add('hidden');
+      }, 5000); 
+    }
+  });
+</script>
 
 <%- include('../partials/footer') %>

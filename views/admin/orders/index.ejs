@@ -1,4 +1,4 @@
-<%- include('../../partials/header') %>
+<%- include('../../partials/header', { user: user, title: 'Manajemen Pesanan' }) %>
 
 <section class="p-8 relative" data-aos="fade-in">
   <h1 class="text-4xl font-extrabold text-amber-300 mb-10">Manajemen Pesanan (Orders)</h1>
@@ -12,39 +12,40 @@
           <th class="py-3 px-6">Pelanggan</th>
           <th class="py-3 px-6">Tanggal</th>
           <th class="py-3 px-6">Total</th>
-          <th class="py-3 px-6">Status Saat Ini</th>
-          <th class="py-3 px-6">Update Status</th>
+          <th class="py-3 px-6">Status</th>
+          <th class="py-3 px-6">Aksi</th>
         </tr>
       </thead>
       <tbody>
         <% if (orders && orders.length > 0) { %>
           <% orders.forEach(order => { %>
-            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors cursor-pointer order-toggle-btn" data-order-id="<%= order.order_id %>">
               <td class="py-4 px-6 font-mono text-amber-400">#<%= order.order_id %></td>
               <td class="py-4 px-6">
-                <div class="font-medium text-white"><%= order.user_name %></div>
+                <div class="font-medium text-white"><%= order.customer_name %></div>
                 <div class="text-sm text-gray-400"><%= order.customer_address %></div>
               </td>
               <td class="py-4 px-6 text-sm"><%= new Date(order.order_date).toLocaleString('id-ID') %></td>
               <td class="py-4 px-6 font-semibold">
-                <%= order.total_amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                <%= parseFloat(order.total_amount).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
               </td>
               
-              <!-- Status Badge -->
               <td class="py-4 px-6">
-                <% if (order.status === 'Completed') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-green-600 text-white"><%= order.status %></span>
-                <% } else if (order.status === 'Processing') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-blue-600 text-white"><%= order.status %></span>
-                <% } else if (order.status === 'Cancelled') { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-red-600 text-white"><%= order.status %></span>
-                <% } else { %>
-                  <span class="px-3 py-1 text-sm rounded-full bg-yellow-600 text-white"><%= order.status %></span>
-                <% } %>
+                <% 
+                    let statusClass = 'bg-yellow-600 text-white'; // Default Pending
+                    // Menggunakan toLowerCase() untuk memastikan match case-insensitive
+                    if (order.status.toLowerCase() === 'completed') {
+                        statusClass = 'bg-green-600 text-white';
+                    } else if (order.status.toLowerCase() === 'processing') {
+                        statusClass = 'bg-blue-600 text-white';
+                    } else if (order.status.toLowerCase() === 'cancelled') {
+                        statusClass = 'bg-red-600 text-white';
+                    }
+                %>
+                <span class="px-3 py-1 text-sm rounded-full <%= statusClass %>"><%= order.status %></span>
               </td>
 
-              <!-- Form Update Status -->
-              <td class="py-4 px-6">
+              <td class="py-4 px-6 flex items-center justify-between">
                 <form action="/admin/orders/update-status/<%= order.order_id %>" method="POST" class="flex items-center space-x-2">
                   <select name="new_status" class="bg-gray-700 text-white text-sm border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-1 focus:ring-amber-500">
                     <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
@@ -56,8 +57,52 @@
                     Update
                   </button>
                 </form>
+                
+                <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-300 ml-4 order-arrow-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
               </td>
+            </tr>
 
+            <tr id="order-details-<%= order.order_id %>" class="order-details-content hidden bg-gray-900 border-b border-gray-700">
+              <td colspan="6" class="p-6"> <% // colspan harus sesuai jumlah kolom utama %>
+                <div class="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
+                  <div class="md:w-1/2">
+                    <h3 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Informasi Pesanan:</h3>
+                    <p class="text-gray-300 mb-2">
+                      <span class="font-semibold">Nama Pelanggan:</span> <%= order.customer_name %>
+                    </p>
+                    <p class="text-gray-300 mb-2">
+                      <span class="font-semibold">Alamat Pengiriman:</span> <%= order.customer_address %>
+                    </p>
+                    <p class="text-gray-300 mb-2">
+                      <span class="font-semibold">Metode Pembayaran:</span> <%= order.payment_method %>
+                    </p>
+                  </div>
+
+                  <div class="md:w-1/2">
+                    <h3 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Produk Dipesan:</h3>
+                    <div class="space-y-3">
+                      <% if (order.items && order.items.length > 0) { %>
+                        <% order.items.forEach(item => { %>
+                          <div class="flex items-center bg-gray-800 p-3 rounded-md border border-gray-700">
+                            <img src="<%= item.menu_image ? item.menu_image : '/images/placeholder-menu.jpg' %>" alt="<%= item.menu_name %>" class="w-16 h-16 object-cover rounded-md mr-4 border border-gray-600">
+                            <div class="flex-grow">
+                              <p class="font-semibold text-white"><%= item.menu_name %></p>
+                              <p class="text-sm text-gray-400">
+                                <%= item.quantity %> x <%= parseFloat(item.price_per_item).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                              </p>
+                            </div>
+                            <span class="font-bold text-amber-400">
+                              <%= (item.quantity * parseFloat(item.price_per_item)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                            </span>
+                          </div>
+                        <% }); %>
+                      <% } else { %>
+                        <p class="text-gray-400">Tidak ada item dalam pesanan ini.</p>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </td>
             </tr>
           <% }); %>
         <% } else { %>
@@ -69,6 +114,74 @@
     </table>
 
   </div>
+
+  <% // --- BAGIAN PAGINATION DITAMBAHKAN DI SINI --- %>
+  <% if (totalPages > 1) { %>
+    <nav class="flex items-center justify-between pt-4" aria-label="Pagination">
+      <div class="flex-1 flex justify-between sm:justify-end">
+        <a href="/admin/orders?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+           class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md
+                  <%= currentPage === 1 ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-700 hover:bg-gray-600 text-gray-300' %>"
+           <%= currentPage === 1 ? 'aria-disabled="true"' : '' %>>
+          Previous
+        </a>
+        <a href="/admin/orders?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+           class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md
+                  <%= currentPage === totalPages ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-700 hover:bg-gray-600 text-gray-300' %>"
+           <%= currentPage === totalPages ? 'aria-disabled="true"' : '' %>>
+          Next
+        </a>
+      </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-400">
+              Showing <span class="font-medium"><%= (currentPage - 1) * limit + 1 %></span>
+              to <span class="font-medium"><%= Math.min(currentPage * limit, totalCount) %></span>
+              of <span class="font-medium"><%= totalCount %></span> results
+            </p>
+        </div>
+        <div>
+          <nav class="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/admin/orders?page=<%= i %>&limit=<%= limit %>"
+                 class="relative inline-flex items-center px-4 py-2 border text-sm font-medium
+                        <%= i === currentPage ? 'z-10 bg-amber-500 border-amber-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700' %>
+                        <%= i === 1 ? 'rounded-l-md' : '' %>
+                        <%= i === totalPages ? 'rounded-r-md' : '' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </nav>
+        </div>
+      </div>
+    </nav>
+  <% } %>
+  <% // --- AKHIR BAGIAN PAGINATION --- %>
+
 </section>
+
+<% // JavaScript untuk Toggle Detail Pesanan - HARUS ADA DI FOOTER.EJS %>
+<% // Ini adalah bagian yang harus ada di footer.ejs Anda. %>
+<% // Jika sudah ada di footer.ejs, TIDAK perlu ditambahkan lagi di sini. %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.order-toggle-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            // Mencegah event dari form update status di dalam baris yang sama
+            if (event.target.tagName === 'SELECT' || event.target.tagName === 'BUTTON') {
+                return;
+            }
+            const orderId = this.dataset.orderId;
+            const detailsContent = document.getElementById(`order-details-${orderId}`);
+            const arrowIcon = this.querySelector('.order-arrow-icon');
+
+            if (detailsContent && arrowIcon) {
+                detailsContent.classList.toggle('hidden');
+                arrowIcon.classList.toggle('rotate-180');
+            }
+        });
+    });
+  });
+</script>
 
 <%- include('../../partials/footer') %>

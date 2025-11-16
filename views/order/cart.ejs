@@ -1,13 +1,16 @@
-
-<%- include('../partials/header') %>
-<section class="p-8 relative"> 
-  <% if (typeof success_message !== 'undefined' && success_message) { %>
-    <div id="success-notification" class="fixed top-24 right-8 z-50 bg-green-600 text-white p-6 rounded-xl shadow-lg max-w-sm" data-aos="fade-left">
+<%- include('../partials/header', { title: 'Keranjang Saya' }) %> 
+<main class="flex-1 p-8 bg-gray-900 text-white overflow-y-auto" id="main-content-area">
+<section class="container mx-auto px-4 py-8 relative"> 
+  <% // Menggunakan 'message' yang dikirim dari backend, bukan 'success_message' %>
+  <% if (message && message.text) { %>
+    <div id="success-notification" class="fixed top-24 right-8 z-50 p-6 rounded-xl shadow-lg max-w-sm
+        <%= message.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white' %>" 
+        data-aos="fade-left">
       <div class="flex items-center">
         <span class="text-3xl mr-4">🎉</span>
         <div>
-          <h3 class="text-xl font-bold">Pesanan Berhasil!</h3>
-          <p class="text-green-100"><%= success_message %></p>
+          <h3 class="text-xl font-bold"><%= message.type === 'success' ? 'Pesanan Berhasil!' : 'Terjadi Kesalahan!' %></h3>
+          <p class="<%= message.type === 'success' ? 'text-green-100' : 'text-red-100' %>"><%= message.text %></p>
         </div>
       </div>
     </div>
@@ -20,7 +23,6 @@
     
     <% if (items && items.length > 0) { %>
 
-      <!-- Daftar Item -->
       <table class="w-full text-left text-gray-300">
         <thead class="bg-gray-700 uppercase text-sm text-gray-400">
           <tr>
@@ -32,14 +34,12 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Loop semua item di keranjang -->
           <% items.forEach(itemData => { %>
             <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
               
-              <!-- Detail Produk -->
               <td class="py-4 px-6">
                 <div class="flex items-center space-x-4">
-                  <img src="<%= itemData.item.image ? itemData.item.image : 'https://placehold.co/80' %>" alt="<%= itemData.item.name %>" class="w-16 h-16 object-cover rounded-md">
+                  <img src="<%= itemData.item.image ? itemData.item.image : '/images/placeholder-menu.jpg' %>" alt="<%= itemData.item.name %>" class="w-16 h-16 object-cover rounded-md">
                   <div>
                     <div class="font-medium text-white text-lg"><%= itemData.item.name %></div>
                     <div class="text-sm text-gray-400"><%= itemData.item.category_name || '' %></div>
@@ -47,20 +47,16 @@
                 </div>
               </td>
               
-              <!-- Harga Satuan (Format Rupiah Bulat) -->
               <td class="py-4 px-6 text-lg">
                 <%= itemData.item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
               </td>
               
-              <!-- Kuantitas -->
               <td class="py-4 px-6 text-lg text-center"><%= itemData.qty %></td>
               
-              <!-- Subtotal (Format Rupiah Bulat) -->
               <td class="py-4 px-6 text-lg font-semibold text-amber-400">
                 <%= itemData.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
               </td>
               
-              <!-- Tombol Hapus -->
               <td class="py-4 px-6">
                 <form action="/order/remove/<%= itemData.item.menu_id %>" method="POST">
                   <button type="submit" class="bg-red-700 hover:bg-red-800 text-white text-sm font-bold py-2 px-3 rounded-md transition-all">
@@ -73,7 +69,6 @@
         </tbody>
       </table>
 
-      <!-- Total dan Checkout -->
       <div class="p-6 bg-gray-700 flex justify-between items-center">
         <div>
           <span class="text-2xl font-bold text-white">Total Keranjang:</span>
@@ -82,7 +77,6 @@
           </span>
         </div>
         <div>
-          <!-- Tombol ini sekarang membuka 'checkout-modal' -->
           <button id="checkout-popup-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
             Lanjut ke Checkout
           </button>
@@ -90,11 +84,10 @@
       </div>
 
     <% } else { %>
-      <!-- Tampilan jika Keranjang Kosong -->
       <div class="p-12 text-center">
         <h2 class="text-2xl font-semibold text-gray-400 mb-4">Keranjang Anda kosong.</h2>
         <p class="text-gray-500 mb-8">Sepertinya Anda belum menambahkan menu apapun.</p>
-        <a href="/menu/all" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
+        <a href="/dashboard" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
           Mulai Belanja
         </a>
       </div>
@@ -103,56 +96,48 @@
   </div>
 </section>
 
-<!-- 
-  =======================================================
-  HTML UNTUK MODAL CHECKOUT
-  =======================================================
--->
 <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden" data-aos="fade-in">
   <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg border border-gray-700 relative" data-aos="fade-up" data-aos-delay="100">
     
-    <!-- Tombol Close (X) -->
     <button id="close-modal-btn" class="absolute top-4 right-5 text-gray-500 hover:text-white text-3xl">&times;</button>
     
     <h2 class="text-3xl font-bold text-amber-300 mb-6">Formulir Checkout</h2>
     
-    <!-- Form Checkout -->
-    <form action="/order/submit" method="POST" class="space-y-5">
+    <form action="/order/submit" method="POST" class="space-y-5"> <% // action tetap /order/submit sesuai logic Anda %>
       
-      <!-- Nama Penerima -->
       <div>
         <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Nama Penerima</label>
-        <input type="text" name="name" id="name" required value="<%= user ? user.name : '' %>" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
+        <input type="text" name="customer_name" id="name" required value="<%= user ? user.name : '' %>" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
       </div>
       
-      <!-- Alamat Pengiriman -->
       <div>
         <label for="address" class="block text-sm font-medium text-gray-300 mb-2">Alamat Pengiriman</label>
-        <textarea name="address" id="address" rows="3" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap Anda..."></textarea>
+        <textarea name="customer_address" id="address" rows="3" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap Anda..."><%= user ? user.address : '' %></textarea> <% // Mengisi otomatis dari user.address %>
       </div>
       
-      <!-- Metode Pembayaran -->
       <div>
-        <label for="payment_method" class="block text-sm font-medium text-gray-300 mb-2">Metode Pembayaran</Glabel>
-        <select name="payment_method" id="payment_method" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
-          <option value="COD (Cash On Delivery)">COD (Cash On Delivery)</option>
-          <option value="Transfer Bank">Transfer Bank</option>
-          <option value="E-Wallet (OVO/Gopay)">E-Wallet (OVO/Gopay)</option>
+        <label for="payment_method" class="block text-sm font-medium text-gray-300 mb-2">Metode Pembayaran</label>
+        <select name="payment_method_id" id="payment_method" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <option value="">Pilih Metode Pembayaran</option> <% // Tambahkan pilihan default %>
+          <% if (paymentMethods && paymentMethods.length > 0) { %>
+            <% paymentMethods.forEach(method => { %>
+              <option value="<%= method.method_id %>"><%= method.method_name %></option>
+            <% }); %>
+          <% } else { %>
+            <option value="" disabled>Tidak ada metode pembayaran</option>
+          <% } %>
         </select>
       </div>
 
-      <!-- Ringkasan Total -->
       <div class="pt-4 border-t border-gray-700">
         <div class="flex justify-between items-center text-lg">
           <span class="text-gray-400">Total yang harus dibayar:</span>
           <span class="text-2xl font-bold text-amber-300">
-            <!-- Cek jika totalPrice ada, jika tidak, tampilkan 0 -->
             <%= (typeof totalPrice !== 'undefined' ? totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) : 'Rp 0') %>
           </span>
         </div>
       </div>
       
-      <!-- Tombol Konfirmasi -->
       <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
         Konfirmasi Pesanan
       </button>
@@ -161,5 +146,5 @@
   </div>
 </div>
 
-<!-- Panggil footer -->
+</main> <% // Menutup tag main yang dibuka di awal %>
 <%- include('../partials/footer') %>

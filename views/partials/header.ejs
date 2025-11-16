@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard KopiKoni | Modern</title>
+  <title><%= title %></title> <% // title harus selalu dilewatkan %>
   <link href="/css/output.css" rel="stylesheet">
-    <link href="/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/vendor/aos/aos.css" rel="stylesheet">
 
   <style>
     .horizontal-scrollbar-hidden {
@@ -16,16 +16,13 @@
       display: none;  /* Chrome, Safari, dan Opera */
     }
   </style>
-  <!-- ======================================================= -->
-
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased flex min-h-screen">
 
-  <!-- Memanggil Sidebar -->
-  <%- include('sidebar') %>
+  <%- include('sidebar', { 
+    user: typeof user !== 'undefined' ? user : null, // Lewatkan user jika terdefinisi, jika tidak null
+    latestOrderStatus: typeof latestOrderStatus !== 'undefined' ? latestOrderStatus : null // Lewatkan latestOrderStatus jika terdefinisi, jika tidak null
+  }) %>
 
-  <!-- Wrapper untuk Konten Kanan (Header + Main) -->
   <div class="flex-1 flex flex-col min-w-0">
         <main id="main-content-area" class="flex-1 bg-gray-900 overflow-y-auto">
-
-
