@@ -176,7 +176,13 @@
             });
         });
     });
-
+// Script untuk menyembunyikan notifikasi flash message setelah beberapa detik
+            const flashNotification = document.getElementById('flash-notification');
+            if (flashNotification) {
+                setTimeout(() => {
+                    flashNotification.classList.add('hidden');
+                }, 5000); // Sembunyikan setelah 5 detik
+            }
     // Sidebar toggle (jika ada, pastikan id tombol sudah benar di header/sidebar)
     const sidebar = document.getElementById('sidebar');
     const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); 
@@ -227,6 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000); 
     }
 });
+
+
     // --- SCRIPT LAIN (Dropdown, Checkout, Notifikasi) ---
     // (Tambahkan script untuk dropdown sidebar, checkout modal, dan notifikasi di sini)
   </script>

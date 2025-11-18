@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title> <% // title harus selalu dilewatkan %>
+  <title>KopiKoni | <%= typeof title !== 'undefined' ? title : 'Selamat Datang' %></title> <% // Default untuk halaman user %>
   <link href="/css/output.css" rel="stylesheet">
   <link href="/vendor/aos/aos.css" rel="stylesheet">
 
@@ -20,9 +20,24 @@
 <body class="bg-gray-900 text-gray-100 font-sans antialiased flex min-h-screen">
 
   <%- include('sidebar', { 
-    user: typeof user !== 'undefined' ? user : null, // Lewatkan user jika terdefinisi, jika tidak null
-    latestOrderStatus: typeof latestOrderStatus !== 'undefined' ? latestOrderStatus : null // Lewatkan latestOrderStatus jika terdefinisi, jika tidak null
+    user: typeof user !== 'undefined' ? user : null,
+    latestOrderStatus: typeof latestOrderStatus !== 'undefined' ? latestOrderStatus : null 
   }) %>
 
   <div class="flex-1 flex flex-col min-w-0">
+        <% // Komponen Notifikasi Flash Message %>
+        <% if (typeof message !== 'undefined' && message && message.text) { %>
+            <div id="flash-notification" class="fixed top-5 right-5 z-50 p-6 rounded-xl shadow-lg max-w-sm
+                <%= message.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white' %>" 
+                data-aos="fade-left">
+              <div class="flex items-center">
+                <span class="text-3xl mr-4"><%= message.type === 'success' ? '🎉' : '❌' %></span>
+                <div>
+                  <h3 class="text-xl font-bold"><%= message.type === 'success' ? 'Berhasil!' : 'Terjadi Kesalahan!' %></h3>
+                  <p class_="<%= message.type === 'success' ? 'text-green-100' : 'text-red-100' %>"><%= message.text %></p>
+                </div>
+              </div>
+            </div>
+        <% } %>
+
         <main id="main-content-area" class="flex-1 bg-gray-900 overflow-y-auto">

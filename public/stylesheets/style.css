@@ -36,10 +36,3 @@ input[type='number'].custom-number-input {
 .modal.hidden {
     display: none;
 }
-
-/* Styling untuk main-content-area agar bisa di-scroll secara independen */
-#main-content-area {
-  flex-grow: 1; /* Memungkinkan main area mengambil ruang yang tersedia */
-  overflow-y: auto; /* Memungkinkan scrolling vertikal */
-  -webkit-overflow-scrolling: touch; /* Meningkatkan performa scrolling di iOS */
-}

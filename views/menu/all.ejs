@@ -1,41 +1,19 @@
 <%- include('../partials/header', { title: 'Menu-all' }) %> <% // Menambahkan title %>
 
-<!-- 
-  Konten Utama Halaman Menu
-  
-  PERBAIKAN BRUTE FORCE:
-  1. Kita HAPUS 'flex-1' dan 'min-w-0' dari class.
-  2. Kita GANTI dengan style 'width' manual yang menghitung
-     lebar layar (100vw) dikurangi lebar sidebar (16rem/w-64).
-  Ini adalah 'hack' tapi sangat stabil jika 'flex-1' gagal.
--->
 <main class="p-8 bg-gray-900 overflow-y-auto" style="height: calc(100vh - 64px); width: calc(100vw - 16rem);">
 
   <h1 class="text-4xl font-extrabold text-amber-300 mb-10">Telusuri Menu Kami</h1>
 
-  <!-- 
-    Looping Pertama: Loop per Kategori
-    'groupedMenu' dikirim dari routes/index.js
-  -->
   <% if (groupedMenu && groupedMenu.length > 0) { %>
     <% groupedMenu.forEach(group => { %>
       
-      <!-- Kita hanya tampilkan kategori yang ada isinya -->
       <% if (group.items.length > 0) { %>
         
-        <!-- 
-          'w-full' di sini sekarang akan berfungsi
-          karena parent-nya (main) sudah memiliki lebar yang benar
-        -->
         <section id="<%= group.category_slug %>" class="mb-16 w-full">
           <h2 class="text-3xl font-bold text-amber-300 mb-8 border-b-2 border-gray-700 pb-4">
             <%= group.category_name %>
           </h2>
           
-          <!-- 
-            Looping Kedua: Loop Menu Item di dalam Kategori
-            Kita gunakan grid yang sama dengan dashboard
-          -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <% group.items.forEach(item => { %>
               

@@ -1,6 +1,6 @@
 <%- include('partials/header', { title: 'Dashboard KopiKoni' }) %>
 <main class="flex-1 p-8 bg-gray-900">
-  
+
   <section 
     class="group mb-12 text-center rounded-xl shadow-xl border border-gray-700 relative overflow-hidden"
     data-aos="fade-in"
@@ -32,51 +32,96 @@
   </section>
 
 
-  <section class="mb-12" id="menu-list">
-    <h3 class="text-3xl font-bold text-amber-300 mb-8 border-b-2 border-gray-700 pb-4">
-      Pilihan Menu Kami
-    </h3>
+  <section class="mb-12" id="popular-menu-list"> 
+        <h3 class="text-3xl font-bold text-amber-300 mb-8 border-b-2 border-gray-700 pb-4">
+          Menu Populer
+        </h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      
-      <% if (menuItems && menuItems.length > 0) { %>
-        <% menuItems.forEach((item, i) => { %>
-          <div data-aos="fade-up" data-aos-delay="<%= (i % 4) * 100 %>" class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group relative border border-gray-700 hover:border-amber-600 shadow-amber-900/10">
-            
-            <div class="h-48 overflow-hidden">
-              <img src="<%= item.image ? item.image : 'https://placehold.co/400x300/27272a/a16207?text=KopiKoni' %>" alt="<%= item.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out">
-            </div>
-            <div class="p-6 flex flex-col" style="min-height: 240px;">
-              <span class="block text-sm text-gray-500 mb-2"><%= item.category_name %></span>
-              <h4 class="text-xl font-bold text-white mb-2"><%= item.name %></h4>
-              <p class="text-gray-400 text-sm mb-4 flex-grow"><%= item.description %></p>
-              
-              <div class="flex justify-between items-center mt-auto pt-4 border-t border-gray-700">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          
+          <% if (popularMenuItems && popularMenuItems.length > 0) { %> 
+            <% popularMenuItems.forEach((item, i) => { %> 
+              <div data-aos="fade-up" data-aos-delay="<%= (i % 4) * 100 %>" class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group relative border border-gray-700 hover:border-amber-600 shadow-amber-900/10">
                 
-                <span class="text-2xl font-bold text-amber-400">
-                  <%= item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
-                </span>
-                
-                <button type="button" 
-                        class="add-to-cart-btn bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transform hover:scale-105 transition-all duration-300"
-                        data-menu-id="<%= item.menu_id %>"
-                        data-menu-name="<%= item.name %>"
-                        data-menu-price="<%= item.price %>"
-                        data-menu-image="<%= item.image %>">
-                  + Keranjang
-                </button>
-               
+                <div class="h-48 overflow-hidden">
+                  <img src="<%= item.image ? item.image : 'https://placehold.co/400x300/27272a/a16207?text=KopiKoni' %>" alt="<%= item.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                </div>
+                <div class="p-6 flex flex-col" style="min-height: 240px;">
+                  <span class="block text-sm text-gray-500 mb-2"><%= item.category_name %></span>
+                  <h4 class="text-xl font-bold text-white mb-2"><%= item.name %></h4>
+                  <p class="text-gray-400 text-sm mb-4 flex-grow"><%= item.description %></p>
+                  
+                  <div class="flex justify-between items-center mt-auto pt-8 border-t border-gray-700">
+                    
+                    <span class="text-2xl font-bold text-amber-400">
+                      Rp <%= item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                    </span>
+                    
+                    <button type="button" 
+                            class="add-to-cart-btn bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transform hover:scale-105 transition-all duration-300"
+                            data-menu-id="<%= item.menu_id %>"
+                            data-menu-name="<%= item.name %>"
+                            data-menu-price="<%= item.price %>"
+                            data-menu-image="<%= item.image %>">
+                      + Keranjang
+                    </button>
+                   
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-          </div>
-        <% }); %>
-      <% } else { %>
-        <p class="text-gray-500 col-span-full text-center">Belum ada menu yang tersedia saat ini.</p>
-      <% } %>
-      
-    </div>
-  </section>
+            <% }); %>
+          <% } else { %>
+            <p class="text-gray-500 col-span-full text-center">Belum ada menu populer saat ini.</p>
+          <% } %>
+          
+        </div>
+      </section>
+
+  <section class="mb-12" id="main-course-menu-list">
+        <h3 class="text-3xl font-bold text-amber-300 mb-8 border-b-2 border-gray-700 pb-4">
+          Main Course
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          
+          <% if (mainCourseItems && mainCourseItems.length > 0) { %>
+            <% mainCourseItems.forEach((item, i) => { %>
+              <div data-aos="fade-up" data-aos-delay="<%= (i % 4) * 100 %>" class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group relative border border-gray-700 hover:border-amber-600 shadow-amber-900/10">
+                
+                <div class="h-48 overflow-hidden">
+                  <img src="<%= item.image ? item.image : 'https://placehold.co/400x300/27272a/a16207?text=KopiKoni' %>" alt="<%= item.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                </div>
+                <div class="p-6 flex flex-col" style="min-height: 240px;">
+                  <span class="block text-sm text-gray-500 mb-2"><%= item.category_name %></span>
+                  <h4 class="text-xl font-bold text-white mb-2"><%= item.name %></h4>
+                  <p class="text-gray-400 text-sm mb-4 flex-grow"><%= item.description %></p>
+                  
+                  <div class="flex justify-between items-center mt-auto pt-8 border-t border-gray-700">
+                    
+                    <span class="text-2xl font-bold text-amber-400">
+                      Rp <%= item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) %>
+                    </span>
+                    
+                    <button type="button" 
+                            class="add-to-cart-btn bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transform hover:scale-105 transition-all duration-300"
+                            data-menu-id="<%= item.menu_id %>"
+                            data-menu-name="<%= item.name %>"
+                            data-menu-price="<%= item.price %>"
+                            data-menu-image="<%= item.image %>">
+                      + Keranjang
+                    </button>
+                   
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p class="text-gray-500 col-span-full text-center">Belum ada menu Main Course saat ini.</p>
+          <% } %>
+          
+        </div>
+      </section>
+
 
 </main>
 

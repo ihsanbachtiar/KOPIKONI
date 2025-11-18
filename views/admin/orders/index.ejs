@@ -134,7 +134,7 @@
       </div>
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
-          <p class="text-sm text-gray-400">
+          <p class="text-sm ml-10 text-gray-400">
               Showing <span class="font-medium"><%= (currentPage - 1) * limit + 1 %></span>
               to <span class="font-medium"><%= Math.min(currentPage * limit, totalCount) %></span>
               of <span class="font-medium"><%= totalCount %></span> results
@@ -159,10 +159,6 @@
   <% // --- AKHIR BAGIAN PAGINATION --- %>
 
 </section>
-
-<% // JavaScript untuk Toggle Detail Pesanan - HARUS ADA DI FOOTER.EJS %>
-<% // Ini adalah bagian yang harus ada di footer.ejs Anda. %>
-<% // Jika sudah ada di footer.ejs, TIDAK perlu ditambahkan lagi di sini. %>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.order-toggle-btn').forEach(button => {

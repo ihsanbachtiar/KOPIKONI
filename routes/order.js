@@ -12,8 +12,16 @@ router.post('/add', isCustomer, async (req, res) => {
   try {
     const { menu_id, quantity } = req.body;
     const qty = parseInt(quantity, 10) || 1;
+
+    // Validasi menu_id dan quantity
+    if (!menu_id || qty <= 0) {
+        req.flash('message', { type: 'error', text: 'Input menu atau kuantitas tidak valid.' });
+        return res.redirect(req.get('referer') || '/dashboard');
+    }
+
     const [menuResult] = await db.query('SELECT * FROM menu_items WHERE menu_id = ?', [menu_id]);
     if (menuResult.length === 0) {
+      req.flash('message', { type: 'error', text: 'Menu tidak ditemukan.' }); // <<< Notifikasi Error
       return res.redirect(req.get('referer') || '/dashboard');
     }
     const menuItem = menuResult[0];
@@ -29,8 +37,9 @@ router.post('/add', isCustomer, async (req, res) => {
       cart.items[menu_id] = storedItem;
     }
     storedItem.qty += qty;
-    storedItem.price = storedItem.item.price * storedItem.qty;
+    storedItem.price = storedItem.item.price * storedItem.qty; // Ini menghitung harga per item * qty
 
+    // Recalculate totalQty and totalPrice for the entire cart
     cart.totalQty = 0;
     cart.totalPrice = 0;
     for (const id in cart.items) {
@@ -38,10 +47,15 @@ router.post('/add', isCustomer, async (req, res) => {
       cart.totalPrice += cart.items[id].price;
     }
     req.session.cart = cart;
+
+    // <<< Notifikasi Sukses Setelah Berhasil Menambahkan ke Keranjang
+    req.flash('message', { type: 'success', text: `${menuItem.name} berhasil ditambahkan ke keranjang!` });
     res.redirect(req.get('referer') || '/dashboard');
   } catch (err) {
     console.error("Error adding to cart:", err);
-    res.status(500).send("Terjadi error pada server.");
+    // <<< Notifikasi Error Jika Terjadi Masalah Server
+    req.flash('message', { type: 'error', text: 'Terjadi error saat menambahkan produk ke keranjang.' });
+    res.redirect(req.get('referer') || '/dashboard');
   }
 });
 /* GET /order/cart (Menampilkan halaman keranjang dari SESSION) */
