@@ -3,25 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KopiKoni | <%= typeof title !== 'undefined' ? title : 'Selamat Datang' %></title> <% // Default untuk halaman user %>
+  <title>KopiKoni | <%= typeof title !== 'undefined' ? title : 'Selamat Datang' %></title>
   <link href="/css/output.css" rel="stylesheet">
   <link href="/vendor/aos/aos.css" rel="stylesheet">
 
-  <style>
-    .horizontal-scrollbar-hidden {
-      -ms-overflow-style: none;  /* IE dan Edge */
-      scrollbar-width: none;  /* Firefox */
-    }
-    .horizontal-scrollbar-hidden::-webkit-scrollbar {
-      display: none;  /* Chrome, Safari, dan Opera */
-    }
-  </style>
+  <!-- <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Pastikan ini tidak memblokir dropdown yang berada di luar main-content-area */
+  }
+
+  .flex-1.flex.flex-col.min-w-0 { 
+      height: 100%;
+  }
+
+  #main-content-area {
+    flex-grow: 1;
+    overflow-y: auto; /* Ini yang menyebabkan scrolling di area utama */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ini tidak akan mempengaruhi interaksi dropdown, hanya tampilan scrollbar */
+  .horizontal-scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .horizontal-scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+</style> -->
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased flex min-h-screen">
 
   <%- include('sidebar', { 
     user: typeof user !== 'undefined' ? user : null,
-    latestOrderStatus: typeof latestOrderStatus !== 'undefined' ? latestOrderStatus : null 
+    latestOrderStatus: typeof latestOrderStatus !== 'undefined' ? latestOrderStatus : null,
+    // --- PENTING: activeMenu DITERUSKAN KE SIDEBAR ---
+    activeMenu: typeof activeMenu !== 'undefined' ? activeMenu : '' 
   }) %>
 
   <div class="flex-1 flex flex-col min-w-0">

@@ -15,31 +15,18 @@
           </h2>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <% group.items.forEach(item => { %>
-              
-              <!-- Card Menu Item (Sama seperti di dashboard) -->
+            <% group.items.forEach(item => { %>              
               <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group relative border border-gray-700 hover:border-amber-600">
                 <div class="h-48 overflow-hidden">
                   <img src="<%= item.image ? item.image : 'https://placehold.co/400x300/27272a/a16207?text=KopiKoni' %>" alt="<%= item.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out">
                 </div>
-                
-                <!-- 
-                  Saya perbaiki min-height agar card lebih seragam
-                  dan flex-col agar tombol 'Tambah' selalu di bawah
-                -->
                 <div class="p-6 flex flex-col" style="min-height: 240px;">
-                  <!-- Pastikan menggunakan item.category_name (dari JOIN) -->
                   <span class="block text-sm text-gray-500 mb-2"><%= item.category_name %></span>
                   <h4 class="text-xl font-bold text-white mb-2"><%= item.name %></h4>
                   <p class="text-gray-400 text-sm mb-4 flex-grow"><%= item.description %></p>
                   
                   <div class="flex justify-between items-center mt-auto pt-4 border-t border-gray-700">
                     <span class="text-2xl font-bold text-amber-400">Rp <%= item.price.toLocaleString('id-ID') %></span>
-                    
-                    <!-- 
-                      Ini adalah form untuk 'Tambah ke Keranjang'
-                      Akan mengirim data ke /order/add
-                    -->
                     <form action="/order/add" method="POST">
                       <input type="hidden" name="menu_id" value="<%= item.menu_id %>">
                       <input type="hidden" name="quantity" value="1">

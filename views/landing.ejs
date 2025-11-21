@@ -7,43 +7,35 @@
   <link href="/css/output.css" rel="stylesheet">
   
   <style>
-    /* Bintang-bintang */
     .stars, .stars2, .stars3 {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none; /* agar tidak menghalangi interaksi */
+      pointer-events: none;
       background: transparent;
     }
     .stars {
       background-image: radial-gradient(circle, rgba(252, 211, 77, 0.8) 1px, transparent 1px); /* Amber */
-      background-size: 60px 60px; /* Jarak antar bintang */
+      background-size: 60px 60px;
       animation: animateStars 100s linear infinite;
     }
-
-    /* Set kedua (sedang, sedang, warna kuning muda) */
     .stars2 {
       background-image: radial-gradient(circle, rgba(253, 224, 71, 0.6) 1px, transparent 1px); /* Kuning */
       background-size: 70px 70px;
       animation: animateStars 70s linear infinite;
     }
-
-    /* Set ketiga (lebih kecil, lebih cepat, warna putih redup) */
     .stars3 {
       background-image: radial-gradient(circle, rgba(229, 231, 235, 0.4) 1px, transparent 1px); /* Abu-abu terang */
       background-size: 50px 50px;
       animation: animateStars 50s linear infinite;
     }
-
-    /* Keyframes untuk animasi bintang */
     @keyframes animateStars {
       from { transform: translateY(0); }
-      to { transform: translateY(100vh); } /* Bintang bergerak dari atas ke bawah */
+      to { transform: translateY(100vh); }
     }
 
-    /* Agar animasi bintang tidak terlalu jauh ke bawah (opsional, bisa disesuaikan) */
     body {
       background-attachment: fixed;
     }

@@ -103,44 +103,49 @@
     
     <h2 class="text-3xl font-bold text-amber-300 mb-6">Formulir Checkout</h2>
     
-    <form action="/order/submit" method="POST" class="space-y-5"> <% // action tetap /order/submit sesuai logic Anda %>
-      
-      <div>
-        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Nama Penerima</label>
-        <input type="text" name="customer_name" id="name" required value="<%= user ? user.name : '' %>" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
-      </div>
-      
-      <div>
-        <label for="address" class="block text-sm font-medium text-gray-300 mb-2">Alamat Pengiriman</label>
-        <textarea name="customer_address" id="address" rows="3" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap Anda..."><%= user ? user.address : '' %></textarea> <% // Mengisi otomatis dari user.address %>
-      </div>
-      
-      <div>
-        <label for="payment_method" class="block text-sm font-medium text-gray-300 mb-2">Metode Pembayaran</label>
-        <select name="payment_method_id" id="payment_method" required class="w-full bg-gray-700 text-white border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-amber-500">
-          <option value="">Pilih Metode Pembayaran</option> <% // Tambahkan pilihan default %>
-          <% if (paymentMethods && paymentMethods.length > 0) { %>
-            <% paymentMethods.forEach(method => { %>
-              <option value="<%= method.method_id %>"><%= method.method_name %></option>
-            <% }); %>
-          <% } else { %>
-            <option value="" disabled>Tidak ada metode pembayaran</option>
-          <% } %>
-        </select>
-      </div>
+   <form action="/order/checkout" method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label for="customer_name" class="block text-gray-300 text-sm font-bold mb-2">Nama Lengkap:</label>
+              <input type="text" id="customer_name" name="customer_name" 
+                     value="<%= user.name || '' %>"
+                     class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-amber-500" required>
+            </div>
+            <div class="mb-6">
+              <label for="customer_address" class="block text-gray-300 text-sm font-bold mb-2">Alamat Pengiriman:</label>
+              <textarea id="customer_address" name="customer_address" rows="3"
+                        class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-amber-500" required><%= user.address || '' %></textarea>
+            </div>
 
-      <div class="pt-4 border-t border-gray-700">
-        <div class="flex justify-between items-center text-lg">
-          <span class="text-gray-400">Total yang harus dibayar:</span>
-          <span class="text-2xl font-bold text-amber-300">
-            <%= (typeof totalPrice !== 'undefined' ? totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }) : 'Rp 0') %>
-          </span>
-        </div>
-      </div>
-      
-      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
-        Konfirmasi Pesanan
-      </button>
+            <div class="mb-6">
+              <label for="payment_method_id" class="block text-gray-300 text-sm font-bold mb-2">Metode Pembayaran:</label>
+              <select id="payment_method_id" name="payment_method_id"
+                      class="shadow border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-amber-500" required>
+                <option value="">Pilih Metode Pembayaran</option>
+                <% if (paymentMethods && paymentMethods.length > 0) { %>
+                  <% paymentMethods.forEach(method => { %>
+                    <option value="<%= method.method_id %>"><%= method.method_name %></option>
+                  <% }); %>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="mb-6">
+              <label for="payment_proof" class="block text-gray-300 text-sm font-bold mb-2">Bukti Pembayaran (Gambar):</label>
+              <input type="file" id="payment_proof" name="payment_proof" accept="image/*"
+                     class="block w-full text-sm text-gray-400
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-amber-600 file:text-white
+                            hover:file:bg-amber-700
+                            cursor-pointer bg-gray-700 rounded-lg border border-gray-600 focus:outline-none">
+              <p class="text-xs text-gray-500 mt-1">*Wajib jika menggunakan Transfer Bank / E-Wallet</p>
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:shadow-outline">
+              Konfirmasi & Bayar
+            </button>
+          </form>
 
     </form>
   </div>

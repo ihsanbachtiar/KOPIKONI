@@ -38,7 +38,8 @@ router.get('/dashboard', isCustomer, async (req, res) => {
        FROM menu_items mi
        LEFT JOIN categories c ON mi.category_id = c.category_id
        WHERE c.category_name = ?
-       ORDER BY mi.name ASC`,
+       ORDER BY mi.name ASC
+       LIMIT 2`,
       ['Main-Course'] 
     );
 
@@ -55,11 +56,6 @@ router.get('/dashboard', isCustomer, async (req, res) => {
     res.redirect('/');
   }
 }); 
-
-
-/* ======================================================= */
-/* == BAGIAN Rute Penambahan Keranjang (dari Diskusi Sebelumnya) == */
-/* ======================================================= */
 
 router.post('/add', isCustomer, async (req, res) => {
   try {
